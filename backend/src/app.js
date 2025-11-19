@@ -1,0 +1,108 @@
+// src/app.js - Express application setup
+
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import 'express-async-errors';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+// Routes
+import authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
+import transactionRoutes from './routes/transactions.js';
+import recipientRoutes from './routes/recipients.js';
+import walletRoutes from './routes/wallets.js';
+import rateRoutes from './routes/rates.js';
+
+// Middleware
+import { errorHandler } from './middleware/errorHandler.js';
+import { rateLimiter } from './middleware/rateLimit.js';
+import { authenticate } from './middleware/authenticate.js';
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// ============ MIDDLEWARE ============
+
+// Security middleware
+app.use(helmet());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true
+}));
+
+// Logging
+app.use(morgan('combined'));
+
+// Body parsing
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// Rate limiting
+app.use(rateLimiter);
+
+// ============ HEALTH CHECK ============
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date(),
+    environment: process.env.NODE_ENV,
+    version: '0.1.0'
+  });
+});
+
+// ============ API ROUTES ============
+const apiV1 = '/api/v1';
+
+// Public routes
+app.use(`${apiV1}/auth`, authRoutes);
+app.use(`${apiV1}/rates`, rateRoutes);
+
+// Protected routes
+app.use(`${apiV1}/users`, authenticate, userRoutes);
+app.use(`${apiV1}/recipients`, authenticate, recipientRoutes);
+app.use(`${apiV1}/transactions`, authenticate, transactionRoutes);
+app.use(`${apiV1}/wallets`, authenticate, walletRoutes);
+
+// ============ 404 HANDLER ============
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found',
+    path: req.path,
+    method: req.method
+  });
+});
+
+// ============ ERROR HANDLER ============
+app.use(errorHandler);
+
+// ============ SERVER STARTUP ============
+const start = async () => {
+  try {
+    // Initialize database connections
+    // await initializeDatabase();
+    // await initializeRedis();
+
+    app.listen(PORT, () => {
+      console.log(`\n✓ CaribRemit API Server started on port ${PORT}`);
+      console.log(`✓ Environment: ${process.env.NODE_ENV}`);
+      console.log(`✓ API URL: http://localhost:${PORT}${apiV1}`);
+      console.log(`✓ Health check: http://localhost:${PORT}/health\n`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+// Only start if this is the main module
+if (import.meta.url === `file://${process.argv[1]}`) {
+  start();
+}
+
+export default app;
