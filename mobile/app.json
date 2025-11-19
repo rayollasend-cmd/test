@@ -1,0 +1,86 @@
+{
+  "expo": {
+    "name": "CaribRemit",
+    "slug": "caribremit",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
+    "splash": {
+      "image": "./src/assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF6B6B"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/xxxxxxxxxxxx"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTabletMode": true,
+      "bundleIdentifier": "com.caribremit.app",
+      "buildNumber": "1",
+      "deploymentTarget": "13.0",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Camera access is required for KYC verification",
+        "NSPhotoLibraryUsageDescription": "Photo library access is required to upload documents",
+        "NSBiometricsUsageDescription": "Biometric authentication for quick login",
+        "NSLocationWhenInUseUsageDescription": "Location is used to improve service delivery",
+        "NSHealthShareUsageDescription": "Health data is not collected",
+        "NSHealthUpdateUsageDescription": "Health data is not updated"
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.caribremit.app",
+      "versionCode": 1,
+      "minSdkVersion": 24,
+      "targetSdkVersion": 34,
+      "useNextNotificationsApi": true,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
+      ]
+    },
+    "web": {
+      "favicon": "./src/assets/images/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
+      "@react-native-firebase/analytics",
+      "@react-native-firebase/crashlytics",
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "Camera access is required for KYC verification"
+        }
+      ],
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "xxxxxxxxxxxx"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
+  }
+}
